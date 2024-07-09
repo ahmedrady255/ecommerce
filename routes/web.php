@@ -41,10 +41,6 @@ Route::get('/why',[whyController::class,'index'])->name('why');
 
 Route::get('/Contact-us',[contactController::class,'index'])->name('contact');
 
-Route::get('/create-transaction', [PaymentController::class, 'createTransaction'])->name('createTransaction');
-Route::get('/success-transaction', [PaymentController::class, 'successTransaction'])->name('successTransaction');
-Route::get('/cancel-transaction', [PaymentController::class, 'cancelTransaction'])->name('cancelTransaction');
-
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -54,10 +50,12 @@ Route::middleware('auth')->group(function () {
 require __DIR__.'/auth.php';
 
 
-Route::get('admin/category', [AdminController::class, 'category'])->middleware(['auth','admin'])->name('admin.category');
+Route::get('admin/category', [AdminController::class, 'category'])
+    ->middleware(['auth','admin'])->name('admin.category');
 
 
-Route::get('admin/dashboard', [AdminController::class, 'index'])->middleware(['auth','admin'])->name('admin.dashboard');
+Route::get('admin/dashboard', [AdminController::class, 'index'])
+    ->middleware(['auth','admin'])->name('admin.dashboard');
 
 Route::post('admin/add_category', [AdminController::class, 'add_category'])
      ->middleware(['auth','admin'])->name('admin.add_category');
