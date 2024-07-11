@@ -59,6 +59,9 @@ public function product_details($id)
             'user_id'=>$user_id,
             'product_id'=>$product_id,
         ]);
+        $product=product::where('id',$product_id)->first();
+        $quantity=$product->quantity-1;
+        $product->update(['quantity'=>$quantity]);
 
         flash()->timeout(3000)->success('product added successfully');
         return redirect()->back();
