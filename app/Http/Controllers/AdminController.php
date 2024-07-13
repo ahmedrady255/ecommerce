@@ -13,6 +13,7 @@ class AdminController extends Controller
 {
     public function index()
     {
+
         $totalUsers=User::where('is_admin',0)->count();
         $totalOrders=Order::all()->count();
         $totalDelivered=Order::where('status','delivered')->count();
@@ -266,20 +267,10 @@ class AdminController extends Controller
     }
     public function onTheWay($id)
     {
-        $order=order::find($id);
-        $product=product::find($order->product_id);
-        if($product->quantity>=1){
-           $order->status="On The Way";
-           $order->save();
-           $product->quantity=$product->quantity-1;
-           $product->save();
-        }
-        else
-        {
-            $order->status="Canceled";
-            $order->save();
-            flash()->timeout(3000)->warning('product quantity is out of stock');
-        }
+        $order=order::find($id)->update([
+            'status'=>'On The Way'
+        ]);
+
 
         return redirect()->back();
     }
@@ -290,4 +281,22 @@ class AdminController extends Controller
       ]);
         return redirect()->back();
     }
+    public function role()
+    {
+        $users=User::all();
+        return view('admin.role',['users'=>$users]);
+    }
+    public function adminRole($id){
+        User::find($id)->update([
+            'is_admin'=>1
+        ]);
+        return redirect()->back();
+    }
+    public function userRole($id){
+        User::find($id)->update([
+            'is_admin'=>0
+        ]);
+        return redirect()->back();
+    }
 }
+

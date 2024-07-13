@@ -60,8 +60,14 @@ public function product_details($id)
             'product_id'=>$product_id,
         ]);
         $product=product::where('id',$product_id)->first();
-        $quantity=$product->quantity-1;
-        $product->update(['quantity'=>$quantity]);
+        if($product->quantity>1){
+            $quantity=$product->quantity-1;
+                 $product->update(['quantity'=>$quantity]);}
+        else
+        {
+            flash()->timeout(3000)->warning('Out of stock');
+        }
+
 
         flash()->timeout(3000)->success('product added successfully');
         return redirect()->back();

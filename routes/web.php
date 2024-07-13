@@ -95,6 +95,15 @@ Route::put('admin/product/{id}', [AdminController::class, 'updateProduct'])
 Route::get('admin/Orders', [AdminController::class, 'viewOrders'])
     ->middleware(['auth','admin'])->name('admin.orders');
 
+Route::get('admin/Roles', [AdminController::class, 'role'])
+    ->middleware(['auth','admin'])->name('admin.role');
+
+Route::post('admin/Roles/admin/{id}', [AdminController::class, 'adminRole'])
+    ->middleware(['auth','admin'])->name('admin.adminRole');
+
+Route::post('admin/Roles/user/{id}', [AdminController::class, 'userRole'])
+    ->middleware(['auth','admin'])->name('admin.userRole');
+
 Route::post('admin/Orders/onTheWay/{id}', [AdminController::class, 'onTheWay'])
     ->middleware(['auth','admin'])->name('admin.order_onTheWay');
 
