@@ -2,81 +2,105 @@
 @section('pageIcon')
     <link rel="shortcut icon" href={{asset('images/favicon.png')}} type="image/x-icon">
 @endsection
+@section('content')
 <style>
-    .div_des{
+    .container {
         display: flex;
-        justify-content: center;
-        align-items:center ;
-        margin-top:60px ;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 60px;
+        gap: 20px; /* Adds spacing between orders */
     }
-    input[type='text']{
-        width: 300px;
-        height:40px
+    .order-card {
+        width: 800px;
+        border: 1px solid black;
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
     }
-    .table_des{
+    .order-card h1 {
+        font-weight: bold;
+        color: black;
+        margin-bottom: 20px;
+    }
+    .order-card p {
+        margin: 5px 0;
+    }
+    .order-card span {
+        font-weight: bold;
+    }
+    .table_des {
         text-align: center;
         margin: auto;
-        border: 2px white;
-        margin-top: 50px;
+        margin-top: 20px;
         width: fit-content;
-
+        border-collapse: collapse;
     }
-    th{
+    .table_des th {
         background-color: #7abaff;
         padding: 15px;
         font-size: 20px;
         font-weight: bold;
         color: white;
     }
-    td{
+    .table_des td {
         color: black;
-        width: fit-content;
-        max-width: max-content;
-        padding:10px;
-        border:1px solid skyblue;
+        padding: 10px;
+        border: 1px solid skyblue;
     }
-
+    .table_des img {
+        width: 150px;
+    }
 </style>
-@section('title','myOrders')
-<!-- end header section -->
-@section('content')
 
-    <div class="div_des">
-        <table class="table_des">
-            <tr>
+<div class="container">
+    @foreach($orders as $order)
+        <div class="order-card">
+            <div class="order_info">
+                <h1>Order Details</h1>
+                <p>Order ID: <span>#{{ $order->id }}</span></p>
+                <p>Customer Name: <span>{{ $order->name }}</span></p>
+                <p>Customer Phone: <span>{{ $order->phone }}</span></p>
+                <p>Customer Address: <span>{{ $order->address }}</span></p>
+                <p>Sub total: <span>{{ $order->sub_total }}$</span></p>
+                <p>Order Status:
+                    @if($order->status == 'in progress')
+                        <span style="color: red;">{{ $order->status }}</span>
+                    @elseif($order->status == 'On The Way')
+                        <span style="color: yellow;">{{ $order->status }}</span>
+                    @else
+                        <span style="color: green;">{{ $order->status }}</span>
+                    @endif
+                </p>
+            </div>
 
-                <th>Product Name</th>
-                <th>Price</th>
-                <th>Image</th>
-                <th>Status</th>
-
-
-            </tr>
-
-            @foreach($order as $order)
+            <table class="table_des">
                 <tr>
-
-
-                    <td>{{$order->product->name}}</td>
-                    <td>{{$order->product->price}}</td>
-                    <td>
-                        <img width="150px" src="{{asset('productsImages/'.$order->product->image)}}">
-                    </td>
-                    <td>
-                        @if($order->status=='in progress')
-                            <span style="color: red" >{{$order->status}}</span>
-                        @elseif($order->status=='On The Way')
-                            <span style="color: yellow" >{{$order->status}}</span>
-                        @else
-                            <span style="color: green" >{{$order->status}}</span>
-                        @endif
-                    </td>
+                    <th>Product Name</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Image</th>
                 </tr>
-            @endforeach
-        </table>
-    </div>
-    <!-- footer section -->
-    @include('layouts.master_footer')
-    <!-- end info section -->
-
+                @php
+                    $orderItems = json_decode($order->order_items, true);
+                @endphp
+                @foreach($orderItems as $item)
+                    <tr>
+                        <td>{{ $item['name'] }}</td>
+                        <td>{{ $item['price'] }}</td>
+                        <td>{{ $item['quantity'] }}</td>
+                        <td>
+                            <img src="{{ asset('productsImages/'.$item['image']) }}" alt="Product Image">
+                        </td>
+                    </tr>
+                @endforeach
+            </table>
+        </div>
+    @endforeach
+</div>
+<!-- footer section -->
+@include('layouts.master_footer')
+<!-- end footer section -->
 @endsection
+

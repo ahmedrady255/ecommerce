@@ -15,7 +15,7 @@
             @foreach($products as $prod)
             <div class="col-sm-6 col-md-4 col-lg-3">
                 <div class="box">
-                    <a href="">
+                    <a href="{{ route('product_details', $prod->id) }}">
                         <div class="img-box">
                             <img style="border-radius:10px " src="{{asset('productsImages/'.$prod->image)}}" alt="">
                         </div>
@@ -33,7 +33,9 @@
                     </a>
                     <div style="padding-top: 10px; white-space: nowrap;">
                         <a style="max-width: fit-content; border-radius: 20px; display: inline-block; margin-right:1px;" class="btn btn-primary" href="{{ route('product_details', $prod->id) }}">More Details</a>
-                        <a style="max-width: fit-content; border-radius: 20px; display: inline-block;" class="btn btn-warning" href="{{route('add_cart',$prod->id)}}">Add to cart</a>
+                        <form style="display: inline-block" action="{{route('add_cart',$prod->id)}}" method="POST">
+                            @csrf
+                        <button style="max-width: fit-content; border-radius: 20px; display: inline-block;" class="btn btn-warning">Add to cart</button></form>
                     </div>
 
                 </div>

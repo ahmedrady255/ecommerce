@@ -10,27 +10,33 @@ use App\Http\Controllers\contactController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\CommentsController;
+use App\Http\Controllers\ordersController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
-Route::get('/dashboard', [HomeController::class, 'home_login'])->middleware(['auth','verified'])->name('dashboard');
+Route::middleware(['auth', 'verified'])->group(function () {
 
-Route::get('/cart/{id}', [HomeController::class, 'add_cart'])->middleware(['auth','verified'])->name('add_cart');
+    // HomeController routes
+    Route::get('/dashboard', [HomeController::class, 'home_login'])->name('dashboard');
+    Route::get('/myOrders', [HomeController::class, 'myOrders'])->name('myOrders');
+    Route::post('/product/{id}/comments', [CommentsController::class, 'store'])->name('comments.store');
 
-Route::get('/myCart', [CartController::class, 'index'])->middleware(['auth','verified'])->name('myCart');
 
-Route::get('/myOrders', [HomeController::class, 'myOrders'])->middleware(['auth','verified'])->name('myOrders');
+    // CartController routes
+    Route::get('/myCart', [CartController::class, 'index'])->name('myCart');
+    Route::post('/cart/add/{id}', [CartController::class, 'add_cart'])->name('add_cart');
+    Route::get('/myCart/{id}', [CartController::class, 'delete'])->name('myCart_delete');
 
-Route::get('/myCart/{id}', [CartController::class, 'delete'])->middleware(['auth','verified'])->name('myCart_delete');
+    //ordersController routs
+    Route::post('/myCart/placeOrder', [ordersController::class, 'placeOrder'])->name('placeOrder');
+    Route::post('/myCart/payWithPaypal', [ordersController::class, 'payWithPaypal'])->name('payWithPaypal');
 
-Route::post('/myCart/placeOrder', [CartController::class, 'placeOrder'])->middleware(['auth','verified'])->name('placeOrder');
-
-Route::post('/myCart/payWithPaypal', [CartController::class, 'payWithPaypal'])->middleware(['auth','verified'])->name('payWithPaypal');
-
-Route::get('/myCart/payWithPaypal/{id}', [PaymentController::class, 'payment'])->middleware(['auth','verified'])->name('payment');
-Route::get('/Paypal/success}', [PaymentController::class, 'success'])->middleware(['auth','verified']);
-Route::get('/cancel', [PaymentController::class, 'cancel'])->middleware(['auth','verified']);
-
+    // PaymentController routes
+    Route::get('/myCart/payWithPaypal/{id}', [PaymentController::class, 'payment'])->name('payment');
+    Route::get('/Paypal/success', [PaymentController::class, 'success']);
+    Route::get('/cancel', [PaymentController::class, 'cancel']);
+});
 Route::get('product/{id}',[homeController::class,'product_details'])->name('product_details');
 
 Route::get('/Shop', [ShopController::class, 'index'])->name('shop');
@@ -62,7 +68,7 @@ Route::get('admin/dashboard', [AdminController::class, 'index'])->middleware(['a
 Route::post('admin/add_category', [AdminController::class, 'add_category'])
      ->middleware(['auth','admin'])->name('admin.add_category');
 
- Route::delete('admin/category/{id}', [AdminController::class, 'destroy'])
+ Route::delete('admin/category/{id}', [AdminController::class, 'destroyCategory'])
      ->middleware(['auth','admin'])->name('admin.destroy_category');
 
 Route::get('admin/category/{id}/edit', [AdminController::class, 'edit'])

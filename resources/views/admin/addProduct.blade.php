@@ -52,7 +52,7 @@
                     </div>
                     <div style="display: inline-block;margin-left: 10px;border-radius: 10px">
                         <p style="color: white">Price:</p>
-                        <input class="form-control" name="price" type="number" min="0.00" max="10000.00" step="0.05" style="border-radius: 10px"/>
+                        <input class="form-control" name="price" type="number" min="0.00"  step="0.05" style="border-radius: 10px"/>
                     </div>
                     <div class="mb-3">
                         <p style="color: white">Product image : </p>

@@ -9,12 +9,9 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model
 {
     use HasFactory;
-    protected $fillable = ['status','payment_status'];
-    public function Product()
-    {
-        return $this->hasOne(product::class,'id','product_id');
-    }
+    protected $fillable = ['status','payment_status','order_items','sub_total'];
     public function user(){
         return $this->hasOne(User::class,'id','user_id');
     }
+
 }

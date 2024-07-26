@@ -38,50 +38,35 @@ class HomeController extends Controller
 
 public function product_details($id)
 {
-    $product=product::with('images')->find($id);
+    $product = Product::with('images')->findOrFail($id);
+    if(Auth::id()){
+        $user=Auth::user();
+        $user_id=$user->id;
+        $count=cart::where('user_id',$user_id)->count();
+    }
+    else{
+        $count=0;
+    }
 
-    $products = Product::all();
-    $user=Auth::user();
-    $user_id=$user->id;
-    $count=cart::where('user_id',$user_id)->count();
     return view('home.product_details',compact('product','count'));
 
 }
 
+
     public function contactUS(){
         return view('home.contact-us');
     }
-    public function add_cart($id){
-        $product_id=$id;
-        $user=Auth::user();
-        $user_id=$user->id;
-        $cart=cart::create([
-            'user_id'=>$user_id,
-            'product_id'=>$product_id,
-        ]);
-        $product=product::where('id',$product_id)->first();
-        if($product->quantity>1){
-            $quantity=$product->quantity-1;
-                 $product->update(['quantity'=>$quantity]);}
-        else
-        {
-            flash()->timeout(3000)->warning('Out of stock');
-        }
 
-
-        flash()->timeout(3000)->success('product added successfully');
-        return redirect()->back();
-
-    }
     public function myOrders(){
         if(Auth::id()){
             $user=Auth::user();
             $order=Order::where('customer_id',$user->id)->get();
             $count=cart::where('user_id',$user->id)->count();
+
         }
         else
             $count='';
 
-        return view('home.myOrders',compact('order','count'));
+        return view('home.myOrders',['orders'=>$order,'count'=>$count] );
     }
 }

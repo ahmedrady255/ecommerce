@@ -35,4 +35,9 @@ class product extends Model
             ]
         ];
     }
+    public function comments()
+    {
+      return  $this->hasMany(Comments::class);
+    }
+
 }

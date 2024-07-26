@@ -41,7 +41,7 @@ class AdminController extends Controller
         return redirect()->back();
     }
 
-    public function destroy($id)
+    public function destroyCategory($id)
     {
         $data = Category::find($id);
         $data->delete();
@@ -137,8 +137,8 @@ class AdminController extends Controller
 
     public function productDestroy($id)
     {
-        $product_id=$id;
         $data = product::find($id);
+
         $im_path = public_path('productsImages/' . $data->image);
         if (file_exists($im_path)) {
             unlink($im_path);
@@ -261,9 +261,9 @@ class AdminController extends Controller
     }
 
     public function viewOrders(){
-        $order=order::all();
+        $orders=order::all();
         $total=order::all()->count();
-        return view('admin.viewOrders',compact('order','total'));
+        return view('admin.viewOrders',compact('orders','total'));
     }
     public function onTheWay($id)
     {
@@ -279,6 +279,14 @@ class AdminController extends Controller
       Order::find($id)->update([
           'status'=>'Delivered'
       ]);
+        return redirect()->back();
+    }
+    public function canceled($id)
+    {
+     $order=Order::find($id)->update([
+          'status'=>'Delivered'
+      ]);
+
         return redirect()->back();
     }
     public function role()

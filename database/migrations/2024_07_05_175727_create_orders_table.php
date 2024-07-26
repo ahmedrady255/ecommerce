@@ -18,10 +18,9 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('status')->default('in progress');
             $table->unsignedBigInteger('customer_id');
-            $table->unsignedBigInteger('product_id');
+            $table->json('order_items')->nullable();
+            $table->float('subtotal')->nullable();
             $table->foreign('customer_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
-
             $table->timestamps();
         });
     }

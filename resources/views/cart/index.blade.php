@@ -44,6 +44,7 @@
            <tr>
                <th>Product name</th>
                <th>Price</th>
+               <th>Quantity</th>
                <th>Image</th>
                <th>Remove</th>
            </tr>
@@ -51,11 +52,12 @@
            <tr>
                <td>{{$cart->Product->name}}</td>
                <td>{{$cart->Product->price}}</td>
+               <td>{{$cart->quantity}}</td>
                <td >
                    <img width="150px" style="height: fit-content" src="{{asset('productsImages/'.$cart->product->image)}}" alt="product image">
                </td>
                <td>
-                   <a class="btn btn-danger" href="{{route('myCart_delete',$cart->product_id)}}">Delete</a>
+                   <a class="btn btn-danger" href="{{route('myCart_delete',$cart->id)}}">Delete</a>
                </td>
            </tr>
 
