@@ -2,7 +2,7 @@
 @section('title','Shop')
 @section('content')
     <!-- shop section beginng-->
-    @include('home.shop')
+    @include('Home.shop')
 <!--shop section end-->
 
 

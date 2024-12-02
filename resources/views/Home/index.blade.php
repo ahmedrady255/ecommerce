@@ -7,20 +7,20 @@
 @section('content')
     <!-- slider section -->
     <div class="hero_area">
-@include('home.slider')
+@include('Home.slider')
     <!-- end slider section -->
     </div>
     <!-- end hero area -->
 
     <!-- shop section -->
 
-   @include('home.shop')
+   @include('Home.shop')
 
     <!-- end shop section -->
 
     <!-- contact section -->
 
-    @include('home.contact-us')
+    @include('Home.contact-us')
 
     <!-- end contact section -->
 

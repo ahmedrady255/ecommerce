@@ -24,7 +24,7 @@ class HomeController extends Controller
         }
         else
             $count='';
-        return view('home.index',compact('products','count'));
+        return view('Home.index',compact('products','count'));
     }
     public function home_login()
     {
@@ -33,7 +33,7 @@ class HomeController extends Controller
         $user_id=$user->id;
         $count=cart::where('user_id',$user_id)->count();
 
-        return view('home.index',compact('products','count'));
+        return view('Home.index',compact('products','count'));
     }
 
 public function product_details($id)
@@ -48,13 +48,13 @@ public function product_details($id)
         $count=0;
     }
 
-    return view('home.product_details',compact('product','count'));
+    return view('Home.product_details',compact('product','count'));
 
 }
 
 
     public function contactUS(){
-        return view('home.contact-us');
+        return view('Home.contact-us');
     }
 
     public function myOrders(){
@@ -67,6 +67,6 @@ public function product_details($id)
         else
             $count='';
 
-        return view('home.myOrders',['orders'=>$order,'count'=>$count] );
+        return view('Home.myOrders',['orders'=>$order,'count'=>$count] );
     }
 }
