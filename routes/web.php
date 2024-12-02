@@ -1,19 +1,21 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use Illuminate\Support\Facades\Route;
+use app\Http\Controllers\AdminController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CommentsController;
+use App\Http\Controllers\contactController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ordersController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\whyController;
-use App\Http\Controllers\contactController;
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\CartController;
-use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\CommentsController;
-use App\Http\Controllers\ordersController;
+use App\Http\Controllers\StoreController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
 
 Route::middleware(['auth', 'verified'])->group(function () {
 
@@ -26,7 +28,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // CartController routes
     Route::get('/myCart', [CartController::class, 'index'])->name('myCart');
     Route::post('/cart/add/{id}', [CartController::class, 'add_cart'])->name('add_cart');
-    Route::get('/myCart/{id}', [CartController::class, 'delete'])->name('myCart_delete');
+    Route::delete('/myCart/{id}', [CartController::class, 'delete'])->name('myCart_delete');
 
     //ordersController routs
     Route::post('/myCart/placeOrder', [ordersController::class, 'placeOrder'])->name('placeOrder');
@@ -37,6 +39,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/Paypal/success', [PaymentController::class, 'success']);
     Route::get('/cancel', [PaymentController::class, 'cancel']);
 });
+
+
 Route::get('product/{id}',[homeController::class,'product_details'])->name('product_details');
 
 Route::get('/Shop', [ShopController::class, 'index'])->name('shop');
@@ -47,6 +51,12 @@ Route::get('/why',[whyController::class,'index'])->name('why');
 
 Route::get('/Contact-us',[contactController::class,'index'])->name('contact');
 
+Route::post('/Contact-us/storeMsg',[contactController::class,'storeMsg'])->name('contact.storeMsg');
+
+
+
+//profile routes
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -56,60 +66,52 @@ Route::middleware('auth')->group(function () {
 require __DIR__.'/auth.php';
 
 
-Route::get('admin/category', [AdminController::class, 'category'])
-    ->middleware(['auth','admin'])->name('admin.category');
+//admin routes
+
+Route::middleware(['auth', 'verified','admin'])->prefix("/admin")->group(function () {
+
+    // admin dashboard
+    Route::get('/', [AdminController::class, 'index'])->name('admin.dashboard');
+
+    // admin categories
+    Route::get('/category', [AdminController::class, 'category'])->name('admin.category');
+    Route::post('/add_category', [AdminController::class, 'add_category'])->name('admin.add_category');
+    Route::get('/category/{id}/edit', [AdminController::class, 'edit'])->name('admin.edit_category');
+    Route::put('/category/{id}', [AdminController::class, 'update'])->name('admin.update_category');
+    Route::delete('/category/{id}', [AdminController::class, 'destroyCategory'])->name('admin.destroy_category');
 
 
-Route::get('admin/dashboard', [AdminController::class, 'index'])
-    ->middleware(['auth','admin'])->name('admin.dashboard');
+    // stores
+    Route::get('/Stores', [StoreController::class, 'index'])->name('admin.stores');
+    Route::get('/addStore', [StoreController::class, 'addStore'])->name('admin.addStore');
+    Route::post('/pushStore', [StoreController::class, 'pushStore'])->name('admin.pushStore');
+    Route::get('/Stores/{id}/edit', [StoreController::class, 'editStore'])->name('admin.editStore');
+    Route::put('/Stores/{id}', [StoreController::class, 'updateStore'])->name('admin.updateStore');
+    Route::delete('/Stores/{id}', [StoreController::class, 'storeDestroy'])->name('admin.destroyStore');
 
-Route::post('admin/add_category', [AdminController::class, 'add_category'])
-     ->middleware(['auth','admin'])->name('admin.add_category');
 
- Route::delete('admin/category/{id}', [AdminController::class, 'destroyCategory'])
-     ->middleware(['auth','admin'])->name('admin.destroy_category');
 
-Route::get('admin/category/{id}/edit', [AdminController::class, 'edit'])
-    ->middleware(['auth','admin'])->name('admin.edit_category');
 
-Route::put('admin/category/{id}', [AdminController::class, 'update'])
-    ->middleware(['auth','admin'])->name('admin.update_category');
 
-Route::get('admin/addProduct', [AdminController::class, 'addProduct'])
-    ->middleware(['auth','admin'])->name('admin.add_product');
+    // Products
+    Route::get('/addProduct', [AdminController::class, 'addProduct'])->name('admin.add_product');
+    Route::post('/addProduct', [AdminController::class, 'storeProduct'])->name('admin.store_product');
+    Route::get('/Products', [AdminController::class, 'viewProducts'])->name('admin.view_products');
+    Route::get('/Product/{id}/edit', [AdminController::class, 'editProduct'])->name('admin.edit_product');
+    Route::put('/product/{id}', [AdminController::class, 'updateProduct'])->name('admin.update_product');
+    Route::delete('/Products/{id}', [AdminController::class, 'productDestroy'])->name('admin.destroy_product');
+    Route::post('/Product/results', [AdminController::class, 'productSearch'])->name('admin.search_product');
 
-Route::post('admin/addProduct', [AdminController::class, 'storeProduct'])
-    ->middleware(['auth','admin'])->name('admin.store_product');
+    //Roles
+    Route::get('/Roles', [AdminController::class, 'role'])->name('admin.role');
+    Route::post('/Roles/admin/{id}', [AdminController::class, 'adminRole'])->name('admin.adminRole');
+    Route::post('/Roles/user/{id}', [AdminController::class, 'userRole'])->name('admin.userRole');
 
-Route::get('admin/Products', [AdminController::class, 'viewProducts'])
-    ->middleware(['auth','admin'])->name('admin.view_products');
+    //Orders
+    Route::get('/Orders', [AdminController::class, 'viewOrders'])->name('admin.orders');
+    Route::post('/Orders/onTheWay/{id}', [AdminController::class, 'onTheWay'])->name('admin.order_onTheWay');
+    Route::post('/Orders/Delivered/{id}', [AdminController::class, 'Delivered'])->name('admin.order_Delivered');
+});
 
-Route::delete('admin/Products/{id}', [AdminController::class, 'productDestroy'])
-    ->middleware(['auth','admin'])->name('admin.destroy_product');
 
-Route::post('admin/Product/results', [AdminController::class, 'productSearch'])
-    ->middleware(['auth','admin'])->name('admin.search_product');
 
-Route::get('admin/Product/{id}/edit', [AdminController::class, 'editProduct'])
-    ->middleware(['auth','admin'])->name('admin.edit_product');
-
-Route::put('admin/product/{id}', [AdminController::class, 'updateProduct'])
-    ->middleware(['auth','admin'])->name('admin.update_product');
-
-Route::get('admin/Orders', [AdminController::class, 'viewOrders'])
-    ->middleware(['auth','admin'])->name('admin.orders');
-
-Route::get('admin/Roles', [AdminController::class, 'role'])
-    ->middleware(['auth','admin'])->name('admin.role');
-
-Route::post('admin/Roles/admin/{id}', [AdminController::class, 'adminRole'])
-    ->middleware(['auth','admin'])->name('admin.adminRole');
-
-Route::post('admin/Roles/user/{id}', [AdminController::class, 'userRole'])
-    ->middleware(['auth','admin'])->name('admin.userRole');
-
-Route::post('admin/Orders/onTheWay/{id}', [AdminController::class, 'onTheWay'])
-    ->middleware(['auth','admin'])->name('admin.order_onTheWay');
-
-Route::post('admin/Orders/Delivered/{id}', [AdminController::class, 'Delivered'])
-    ->middleware(['auth','admin'])->name('admin.order_Delivered');

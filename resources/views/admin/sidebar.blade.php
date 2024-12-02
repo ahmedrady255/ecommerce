@@ -14,6 +14,7 @@
             <li class="@yield('active')"><a href="{{route('admin.dashboard')}}"> <i class="icon-home"></i>Home </a></li>
             <li class="@yield('active')"><a href="{{route('admin.role')}}"> <i class="icon-controls"></i>Roles </a></li>
             <li class="@yield('active')"><a  href="{{route('admin.category')}}"> <i class="icon-flow-branch"></i>Categorise </a></li>
+            <li class="@yield('active')"><a  href="{{route('admin.stores')}}"> <i class="icon-user"></i>Stores</a></li>
             <li><a  href="#exampledropdownDropdown" aria-expanded="false" data-toggle="collapse"> <i class="icon-list-1"></i>Products</a>
                 <ul id="exampledropdownDropdown" class="collapse list-unstyled ">
                     <li><a href="{{route('admin.view_products')}}">View Products</a></li>

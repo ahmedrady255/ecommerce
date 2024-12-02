@@ -20,14 +20,14 @@
             </div>
 
         </div>
-
+        <div>
                 <!-- Log out               -->
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <input type="submit" style="padding:10px ;border-radius: 10px; max-width: fit-content" class="btn-primary" value="logout">
             </form>
 
-            </div>
+
         </div>
     </nav>
 </header>

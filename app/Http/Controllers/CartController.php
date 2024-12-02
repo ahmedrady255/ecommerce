@@ -84,15 +84,14 @@ class CartController extends Controller
     public function delete($id){
 
         $item=cart::find($id);
-
-        $product=Product::find($item->product_id);
-
-//        $productQuantity=$product->quantity+$item->quantity;
-
-       $product->update([
-            'quantity'=> \DB::raw('quantity+'.$item->quantity)
-        ]);
-
+//        $product=Product::find($item->product_id);
+//
+////        $productQuantity=$product->quantity+$item->quantity;
+//
+//       $product->update([
+//            'quantity'=> \DB::raw('quantity+'.$item->quantity)
+//        ]);
+//
         $item->delete();
 
         return redirect()->back();

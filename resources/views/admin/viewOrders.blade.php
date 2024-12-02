@@ -12,7 +12,7 @@
         }
         .order-card {
             width: 800px;
-            border: 1px solid black;
+            border: 1px solid hotpink ;
             border-radius: 20px;
             padding: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);

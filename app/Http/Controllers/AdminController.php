@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace app\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\image;
 use App\Models\Order;
 use App\Models\product;
+use App\Models\stores;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -13,12 +14,12 @@ class AdminController extends Controller
 {
     public function index()
     {
-
         $totalUsers=User::where('is_admin',0)->count();
         $totalOrders=Order::all()->count();
         $totalDelivered=Order::where('status','delivered')->count();
         $totalOnTheWay=Order::where('status','On The Way')->count();
-        return view('admin.index',compact('totalUsers','totalOrders','totalDelivered','totalOnTheWay'));
+        $totalStores=stores::all()->count();
+        return view('admin.index',compact('totalUsers','totalOrders','totalDelivered','totalOnTheWay','totalStores'));
     }
 
     public function category()
@@ -31,24 +32,54 @@ class AdminController extends Controller
 
     public function add_category(Request $request)
     {
-        $request->validate([
-            'category' => 'required|unique:categories,category_name'
-        ]);
-        $category = new Category();
-        $category->category_name = $request->category;
-        $category->save();
-        flash()->timeout(3000)->success('category added successfully');
-        return redirect()->back();
+        try {
+            $request->validate([
+                'category_name' => 'required|string|max:255',
+            ]);
+
+            $category = new Category();
+            $category->category_name = $request->category_name;
+            $category->save();
+
+            return response()->json([
+                'success' => true,
+                'category' => $category,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
+
 
     public function destroyCategory($id)
     {
-        $data = Category::find($id);
-        $data->delete();
-        flash()->timeout(3000)->warning('category deleted successfully');
-        return to_route('admin.category');
+        try {
+            $category = Category::findOrFail($id); // Find the category or throw a 404 exception
+            $category->delete();
 
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Category deleted successfully.',
+            ]);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Category not found.',
+            ], 404);
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
+
 
     public function edit($id)
     {
@@ -56,19 +87,48 @@ class AdminController extends Controller
         return view('admin.edit', ['cat' => $data]);
     }
 
-    public function update($id)
+    public function update(Request $request, $id)
+    {
+        try {
+
+            $data = Category::findOrFail($id);
+
+
+            $request->validate([
+                'category_name' => 'required|string|max:255',
+            ]);
+
+
+            $data->update([
+                'category_name' => $request->category_name
+            ]);
+
+
+            return response()->json([
+                'success' => true,
+                'category' => $data,
+                'message' => 'Category updated successfully'
+            ]);
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            // Category not found
+            return response()->json([
+                'success' => false,
+                'message' => 'Category not found'
+            ], 404);
+        } catch (\Exception $e) {
+            // Other errors
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+    public function stores ()
     {
 
-        $data = Category::find($id);
-        request()->validate([
-            'category' => 'required|string|max:255',
-        ]);
-        $data->update([
-            'category_name' => request()->category
-        ]);
-//        $data->save();
-        flash()->timeout(3000)->success('category updated successfully');
-        return redirect()->route('admin.category');
     }
 
     public function addProduct()
@@ -79,50 +139,57 @@ class AdminController extends Controller
 
     public function storeProduct(Request $request)
     {
-        request()->all([
-            'name' => 'required|string|max:255',
-            'price' => 'required|string|max:255',
-            'quantity' => 'required|string|max:255',
-            'category' => 'required|string|max:255',
-            'description' => 'required|string|max:255',
-            'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        try {
 
-        ]);
-        $pro_name = request()->name;
-        $pro_price = request()->price;
-        $pro_quantity = request()->quantity;
-        $pro_category = request()->category;
-        $pro_description = request()->description;
-        $pro_image = request()->image;
-        $pro_slider= request()->slider;
-        $newProductImageName = time() . '_' . request()->name . '.' . $pro_image->extension();
-        request()->image->move(public_path('productsImages'), $newProductImageName);
+            $validatedData = $request->validate([
+                'name' => 'required|string|max:255',
+                'price' => 'required|numeric|min:0',
+                'quantity' => 'required|integer|min:0',
+                'category' => 'required|string|max:255',
+                'description' => 'required|string|max:255',
+                'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+                'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            ]);
 
-     $product= product::create([
-            'name' => $pro_name,
-            'price' => $pro_price,
-            'quantity' => $pro_quantity,
-            'category' => $pro_category,
-            'description' => $pro_description,
-            'image' => $newProductImageName,
-         'with_slider' => $pro_slider,
-        ]);
-     if($pro_slider==1) {
-         if ($request->hasFile('images')) {
-             $i = 1;
-             foreach ($request->file('images') as $image) {
-                 $imageName = time() . '_' . request()->name . '_prodSlider' . '_' . $i . '.' . $image->extension();
-                 $image->move(public_path('productsImages'), $imageName);
-                 $i = $i + 1;
-                 $product->images()->create(['image_path' => $imageName]);
-             }
-         }
-     }
+            $product = new Product();
+            $product->name = $request->name;
+            $product->price = $request->price;
+            $product->quantity = $request->quantity;
+            $product->category = $request->category;
+            $product->description = $request->description;
+            $product->with_slider = $request->slider;
 
-        flash()->timeout(3000)->success('product added successfully');
-        return to_route('admin.view_products');
+            // Handle the main product image
+            if ($request->hasFile('image')) {
+                $pro_image = $request->file('image');
+                $newProductImageName = time() . '_' . $request->name . '.' . $pro_image->extension();
+                $pro_image->move(public_path('productsImages'), $newProductImageName);
+                $product->image = 'productsImages/' . $newProductImageName; // Corrected path
+            }
+            $product->save();
+
+
+            if ($request->slider == 1 && $request->hasFile('images')) {
+                $i = 1;
+                foreach ($request->file('images') as $image) {
+                    $imageName = time() . '_' . $request->name . '_prodSlider_' . $i . '.' . $image->extension();
+                    $image->move(public_path('productsImages'), $imageName);
+                    $product->images()->create(['image_path' => 'productsImages/' . $imageName]);
+                    $i++;
+                }
+            }
+
+            flash()->timeout(3000)->success('Product added successfully');
+            return response()->json(['success' => true]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+
+            return response()->json(['success' => false, 'message' => $e->errors()], 422);
+        } catch (\Exception $e) {
+
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
     }
+
 
 
 

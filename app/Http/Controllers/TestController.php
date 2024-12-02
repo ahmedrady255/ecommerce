@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\cart;
 use Illuminate\Http\Request;
 
 class TestController extends Controller
 {
     public function index(){
-        return view('testimonial.index');
+        $count=cart::count();
+        return view('testimonial.index',compact('count'));
     }
 }

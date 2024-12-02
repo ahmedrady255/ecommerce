@@ -40,4 +40,10 @@ class product extends Model
       return  $this->hasMany(Comments::class);
     }
 
+    public function category(){
+        return $this->belongsTo(category::class);
+    }
+    public function stores(){
+        return $this->belongsTo(stores::class);
+    }
 }

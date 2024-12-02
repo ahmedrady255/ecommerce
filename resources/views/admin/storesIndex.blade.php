@@ -4,77 +4,77 @@
     @include('admin.css')
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
-
-    @include("admin.table_css")
+@include("admin.table_css")
 </head>
 <body>
 @include('admin.header')
 @include('admin.sidebar')
-
-
-<!-- Sidebar Navigation end-->
 <div class="page-content">
     <div class="page-header">
         <div class="container-fluid">
-           <a href="{{route('admin.view_products')}}"> <h1 style="color:white">Products</h1></a>
+            <h1 style="color:white">Add Store</h1>
+            <p >Total stores : {{$count}}</p>
+            <div class="div_design">
+                <center>
+                      <a class="btn btn-primary" href="{{route("admin.addStore")}}">Add Store</a>
+                </center>
+            </div>
+
         </div>
     </div>
-    <div class="div_des">
-      @if(count($results)>0)
+    <div>
 
         <table class="table_des">
 
             <tr>
                 <th >
-                    Product Name
+                    Store Name
                 </th>
                 <th>
-                    Description
+                    Phone
                 </th>
                 <th>
-                    Category
+                    Email
                 </th>
                 <th>
-                    Quantity
+                    Address
                 </th>
                 <th>
-                    Price
+                    Icon
                 </th>
                 <th>
-                    Image
+                    Option
                 </th>
-                <th>
-                    options
-                </th>
+
             </tr>
-            @foreach($results as $prod)
+            @foreach($stores as $store)
                 <tr>
                     <td >
-                        {{$prod->name}}
+                        {{$store->name}}
                     </td>
                     <td>
-                        {!! Str::words($prod->description,5) !!} <!--to limit viewed words from description-->
+                        {{$store->phone}}
                     </td>
                     <td>
-                        {{$prod->category}}
+                        {{$store->email}}
                     </td>
                     <td>
-                        {{$prod->quantity}}
+                        {{$store->address}}
                     </td>
                     <td>
-                        {{$prod->price}}
-                    </td>
-                    <td>
-                        <img src="{{asset('productsImages/'.$prod->image)}}" style="max-width: 100px;max-height:100px" alt="prod_image">
+                        <img src="{{asset('storesIcons/'.$store->icon)}}" style="max-width: 100px;max-height:100px">
                     </td>
                     <td>
                         <div class="btn-group">
-                            <form method="POST" action="{{route('admin.destroy_product',$prod->id)}}">
+                            <form method="POST" action="{{route('admin.destroyStore',$store->id)}}">
                                 @csrf
                                 @method("DELETE")
                                 <button style="display:inline;" type="submit" onclick="return confirm('are you sure you want to delete the post?')" class="btn btn-danger">Delete</button>
                             </form>
+                            <br>
+                            <a href="{{route("admin.editStore",$store->id)}}"  type="button" class=" btn btn-warning mr-2">Edit</a>
                         </div>
                     </td>
                 </tr>
@@ -82,22 +82,5 @@
         </table>
 
     </div>
-    @else
-        <p style="color: white">no results found<p>
-    @endif
 </div>
-<!-- JavaScript files-->
-<script type="text/javascript">
 
-</script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="{{asset('adminPanel/vendor/jquery/jquery.min.js')}}"></script>
-<script src="{{asset('adminPanel/vendor/popper.js/umd/popper.min.js')}}"> </script>
-<script src="{{asset('adminPanel/vendor/bootstrap/js/bootstrap.min.js')}}"></script>
-<script src="{{asset('adminPanel/vendor/jquery.cookie/jquery.cookie.js')}}"> </script>
-<script src="{{asset('adminPanel/vendor/chart.js/Chart.min.js')}}"></script>
-<script src="{{asset('adminPanel/vendor/jquery-validation/jquery.validate.min.js')}}"></script>
-<script src="{{asset('adminPanel/js/charts-home.js')}}"></script>
-<script src="{{asset('adminPanel/js/front.js')}}"></script>
-</body>
-</html>
